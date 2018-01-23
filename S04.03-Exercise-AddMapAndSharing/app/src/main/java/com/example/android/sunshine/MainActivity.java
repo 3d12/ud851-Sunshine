@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.sunshine.ForecastAdapter.ForecastAdapterOnClickHandler;
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -221,7 +222,22 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
             return true;
         }
 
-        // TODO (2) Launch the map when the map menu item is clicked
+        if (id == R.id.action_map) {
+            String location = SunshinePreferences.getPreferredWeatherLocation(this);
+            Uri.Builder mapUri = new Uri.Builder();
+            mapUri.scheme("geo");
+            mapUri.path("0,0");
+            mapUri.appendQueryParameter("q", location);
+            mapUri.appendQueryParameter("z", "30");
+            Intent intent = new Intent(Intent.ACTION_VIEW, mapUri.build());
+            if (intent.resolveActivity(this.getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "ERROR: No map viewer app installed!", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        // DONE (2) Launch the map when the map menu item is clicked
 
         return super.onOptionsItemSelected(item);
     }
