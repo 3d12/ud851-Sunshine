@@ -40,6 +40,7 @@ import com.example.android.sunshine.utilities.NetworkUtils;
 import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
+import java.util.prefs.Preferences;
 
 // DONE (1) Implement the proper LoaderCallbacks interface and the methods of that interface
 public class MainActivity extends AppCompatActivity implements ForecastAdapterOnClickHandler,LoaderManager.LoaderCallbacks<String[]> {
@@ -179,8 +180,8 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
     }
 
     @Override
-    public AsyncTaskLoader<String[]> onCreateLoader(int id, final Bundle args) {
-        AsyncTaskLoader<String[]> newLoader = new AsyncTaskLoader<String[]>(this) {
+    public Loader<String[]> onCreateLoader(int id, final Bundle args) {
+        Loader<String[]> newLoader = new AsyncTaskLoader<String[]>(this) {
             private String[] mCachedResults;
             private static final String TAG = "AsyncTaskLoader";
             @Override
@@ -204,15 +205,13 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
                 String searchResults;
                 String[] jsonResults;
                 try {
-                    if (args.containsKey(LOADER_PARAM_URL_KEY)) {
-                        String searchQuery = args.getString(LOADER_PARAM_URL_KEY);
+                    String searchQuery = SunshinePreferences.getPreferredWeatherLocation(MainActivity.this);
                         if (!searchQuery.equals("") && searchQuery != null) {
-                            URL newSearchURL = NetworkUtils.buildUrl(args.getString(LOADER_PARAM_URL_KEY));
+                            URL newSearchURL = NetworkUtils.buildUrl(searchQuery);
                             searchResults = NetworkUtils.getResponseFromHttpUrl(newSearchURL);
                             jsonResults = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(this.getContext(), searchResults);
                             return jsonResults;
                         }
-                    }
                     return null;
                 } catch (Exception e) {
                     e.printStackTrace();
