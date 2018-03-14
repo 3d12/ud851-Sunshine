@@ -15,6 +15,7 @@
  */
 package com.example.android.sunshine;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -332,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    @TargetApi(16)
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -346,11 +348,16 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
 
-        // TODO (1) Add new Activity called SettingsActivity using Android Studio wizard
+        // DONE (1) Add new Activity called SettingsActivity using Android Studio wizard
         // Do step 2 in SettingsActivity
-        // TODO (2) Set setDisplayHomeAsUpEnabled to true on the support ActionBar
+        // DONE (2) Set setDisplayHomeAsUpEnabled to true on the support ActionBar
 
-        // TODO (6) Launch SettingsActivity when the Settings option is clicked
+        // DONE (6) Launch SettingsActivity when the Settings option is clicked
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, 0, null);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
