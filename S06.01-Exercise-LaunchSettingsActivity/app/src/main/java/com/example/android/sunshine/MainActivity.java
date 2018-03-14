@@ -355,7 +355,8 @@ public class MainActivity extends AppCompatActivity implements
         // DONE (6) Launch SettingsActivity when the Settings option is clicked
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, 0, null);
+            //startActivityForResult(intent, 0, null);
+            startActivity(intent);
             return true;
         }
 
