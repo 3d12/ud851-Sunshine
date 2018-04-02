@@ -119,7 +119,7 @@ public class WeatherProvider extends ContentProvider {
             case CODE_WEATHER_WITH_DATE:
                 retCursor = db.query(WeatherContract.WeatherEntry.TABLE_NAME,
                         null,
-                        WeatherContract.WeatherEntry.COLUMN_DATE,
+                        WeatherContract.WeatherEntry.COLUMN_DATE + "=?",
                         new String[]{uri.getPathSegments().get(1)},
                         null,
                         null,
