@@ -20,8 +20,10 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 /**
  * This class serves as the ContentProvider for all of Sunshine's data. This class allows us to
@@ -122,7 +124,7 @@ public class WeatherProvider extends ContentProvider {
         return true;
     }
 
-//  TODO (1) Implement the bulkInsert method
+//  DONE (1) Implement the bulkInsert method
     /**
      * Handles requests to insert a set of new rows. In Sunshine, we are only going to be
      * inserting multiple rows of data at a time from a weather forecast. There is no use case
@@ -138,13 +140,43 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        throw new RuntimeException("Student, you need to implement the bulkInsert method!");
+        int numInserted = 0;
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        switch (match) {
+            case CODE_WEATHER:
+                db.beginTransaction();
+                try {
+                    long queryResult;
+                    for (ContentValues value : values) {
+                        queryResult = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
+                        if (queryResult >= 0) {
+                            numInserted++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "An exception occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    db.endTransaction();
+                    return -1;
+                } finally {
+                    db.endTransaction();
+                }
+                break;
+            default:
+                super.bulkInsert(uri, values);
+        }
+        if (numInserted > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return numInserted;
 
-//          TODO (2) Only perform our implementation of bulkInsert if the URI matches the CODE_WEATHER code
+//          DONE (2) Only perform our implementation of bulkInsert if the URI matches the CODE_WEATHER code
 
-//              TODO (3) Return the number of rows inserted from our implementation of bulkInsert
+//              DONE (3) Return the number of rows inserted from our implementation of bulkInsert
 
-//          TODO (4) If the URI does match match CODE_WEATHER, return the super implementation of bulkInsert
+//          DONE (4) If the URI does match match CODE_WEATHER, return the super implementation of bulkInsert
     }
 
     /**
@@ -274,7 +306,26 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        throw new RuntimeException("Student, you need to implement the delete method!");
+        int retCount = 0;
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        switch (sUriMatcher.match(uri)) {
+            case CODE_WEATHER:
+                retCount = db.delete(WeatherContract.WeatherEntry.TABLE_NAME,
+                        null,
+                        null);
+                break;
+            case CODE_WEATHER_WITH_DATE:
+                retCount = db.delete(WeatherContract.WeatherEntry.TABLE_NAME,
+                        WeatherContract.WeatherEntry.COLUMN_DATE + "=?",
+                        new String[]{uri.getPathSegments().get(1)});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unrecognized uri: " + uri.toString());
+        }
+        if (retCount > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return retCount;
     }
 
     /**
