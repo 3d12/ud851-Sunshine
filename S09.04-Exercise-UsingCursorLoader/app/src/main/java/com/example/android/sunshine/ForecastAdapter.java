@@ -24,6 +24,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.sunshine.data.WeatherContract;
+import com.example.android.sunshine.utilities.SunshineDateUtils;
+import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -106,21 +108,14 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
     public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
         Long dateLong = mCursor.getLong(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE));
-        if (dateLong == null) {
-            return;
-        }
-        Date dateDate = new Date(dateLong);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        NumberFormat nf = NumberFormat.getPercentInstance();
-        nf.setMinimumFractionDigits(2);
-        nf.setMaximumFractionDigits(2);
-        Double humidityDouble = Double.valueOf(mCursor.getString(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_HUMIDITY)));
-        String summary = sdf.format(dateDate) + " " +
-                mCursor.getString(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID)) + " " +
-                mCursor.getString(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP)) + "/" +
-                mCursor.getString(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP)) + " " +
-                nf.format(humidityDouble/100.0);
-        forecastAdapterViewHolder.weatherSummary.setText(summary);
+        String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateLong, false);
+        int weatherId = mCursor.getInt(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID));
+        String weatherString = SunshineWeatherUtils.getStringForWeatherCondition(mContext, weatherId);
+        double highInCelsius = mCursor.getDouble(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP));
+        double lowInCelsius = mCursor.getDouble(mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP));
+        String highAndLowTemperature = SunshineWeatherUtils.formatHighLows(mContext, highInCelsius, lowInCelsius);
+        String weatherSummary = dateString + " - " + weatherString + " - " + highAndLowTemperature;
+        forecastAdapterViewHolder.weatherSummary.setText(weatherSummary);
 //      DONE (5) Delete the current body of onBindViewHolder
 //      DONE (6) Move the cursor to the appropriate position
 //      DONE (7) Generate a weather summary with the date, description, high and low
