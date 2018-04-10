@@ -22,16 +22,38 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.example.android.sunshine.data.WeatherContract;
+import com.firebase.jobdispatcher.Driver;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.JobService;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
 
 public class SunshineSyncUtils {
 
-//  TODO (10) Add constant values to sync Sunshine every 3 - 4 hours
+//  DONE (10) Add constant values to sync Sunshine every 3 - 4 hours
+    private static final int SYNC_WINDOW_START = 10800;
+    private static final int SYNC_WINDOW_FLEX = 3600;
 
     private static boolean sInitialized;
 
-//  TODO (11) Add a sync tag to identify our sync job
+//  DONE (11) Add a sync tag to identify our sync job
+    private static final String SYNC_TAG = "sync-task";
 
-//  TODO (12) Create a method to schedule our periodic weather sync
+//  DONE (12) Create a method to schedule our periodic weather sync
+    private static void schedulePeriodicSync(Context context) {
+        Driver driver = new GooglePlayDriver(context);
+        FirebaseJobDispatcher fjd = new FirebaseJobDispatcher(driver);
+        Job.Builder jobBuilder = fjd.newJobBuilder();
+        jobBuilder.setTrigger(Trigger.executionWindow(SYNC_WINDOW_START, SYNC_WINDOW_START + SYNC_WINDOW_FLEX));
+        jobBuilder.setRecurring(true);
+        jobBuilder.setLifetime(Lifetime.FOREVER);
+        jobBuilder.setTag(SYNC_TAG);
+        jobBuilder.setReplaceCurrent(true);
+        jobBuilder.setService(SunshineFirebaseJobService.class);
+        fjd.schedule(jobBuilder.build());
+    }
 
     /**
      * Creates periodic sync tasks and checks to see if an immediate sync is required. If an
@@ -50,7 +72,8 @@ public class SunshineSyncUtils {
 
         sInitialized = true;
 
-//      TODO (13) Call the method you created to schedule a periodic weather sync
+//      DONE (13) Call the method you created to schedule a periodic weather sync
+        schedulePeriodicSync(context);
 
         /*
          * We need to check to see if our ContentProvider has data to display in our forecast
