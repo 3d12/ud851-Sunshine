@@ -15,15 +15,28 @@
  */
 package com.example.android.sunshine.sync;
 
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.preference.CheckBoxPreference;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.example.android.sunshine.R;
+import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.utilities.NetworkUtils;
+import com.example.android.sunshine.utilities.NotificationUtils;
 import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
+import com.example.android.sunshine.utilities.SunshineDateUtils;
 
 import java.net.URL;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 public class SunshineSyncTask {
 
@@ -36,6 +49,8 @@ public class SunshineSyncTask {
      * @param context Used to access utility methods and the ContentResolver
      */
     synchronized public static void syncWeather(Context context) {
+
+        Log.d("syncWeather", "Starting syncWeather, prior to try block");
 
         try {
             /*
@@ -52,6 +67,8 @@ public class SunshineSyncTask {
             ContentValues[] weatherValues = OpenWeatherJsonUtils
                     .getWeatherContentValuesFromJson(context, jsonWeatherResponse);
 
+            Log.d("syncWeather", "weatherValues has returned... Is it null? " + String.valueOf(weatherValues == null) + " and what's the length? " + String.valueOf(weatherValues.length));
+
             /*
              * In cases where our JSON contained an error code, getWeatherContentValuesFromJson
              * would have returned null. We need to check for those cases here to prevent any
@@ -59,6 +76,7 @@ public class SunshineSyncTask {
              * there isn't any to insert.
              */
             if (weatherValues != null && weatherValues.length != 0) {
+                Log.d("syncWeather", "weatherValues returned with data! Continuing...");
                 /* Get a handle on the ContentResolver to delete and insert data */
                 ContentResolver sunshineContentResolver = context.getContentResolver();
 
@@ -73,11 +91,20 @@ public class SunshineSyncTask {
                         WeatherContract.WeatherEntry.CONTENT_URI,
                         weatherValues);
 
-//              TODO (13) Check if notifications are enabled
+//              DONE (13) Check if notifications are enabled
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+                Resources resources = context.getResources();
+                boolean notificationsEnabled = sp.getBoolean(context.getString(R.string.pref_enable_notifications_key),
+                        resources.getBoolean(R.bool.pref_notifications_bool));
+                Log.d("syncWeather", "Are notifications enabled? " + String.valueOf(notificationsEnabled));
 
-//              TODO (14) Check if a day has passed since the last notification
+//              DONE (14) Check if a day has passed since the last notification
+                //if (notificationsEnabled && SunshinePreferences.getEllapsedTimeSinceLastNotification(context) > SunshineDateUtils.DAY_IN_MILLIS) {
+                //if (notificationsEnabled) {
+                    NotificationUtils.notifyUserOfNewWeather(context);
+                //}
 
-//              TODO (15) If more than a day have passed and notifications are enabled, notify the user
+//              DONE (15) If more than a day have passed and notifications are enabled, notify the user
 
             /* If the code reaches this point, we have successfully performed our sync */
 

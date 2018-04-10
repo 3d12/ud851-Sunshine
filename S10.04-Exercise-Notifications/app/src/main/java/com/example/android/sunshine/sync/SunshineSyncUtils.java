@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.android.sunshine.data.WeatherContract;
 import com.firebase.jobdispatcher.Constraint;
@@ -108,11 +109,16 @@ public class SunshineSyncUtils {
      */
     synchronized public static void initialize(@NonNull final Context context) {
 
+        Log.d("SyncUtils", "Initializing...");
+
         /*
          * Only perform initialization once per app lifetime. If initialization has already been
          * performed, we have nothing to do in this method.
          */
-        if (sInitialized) return;
+        if (sInitialized) {
+            Log.d("SyncUtils", "Already initialized -- returning");
+            return;
+        }
 
         sInitialized = true;
 
@@ -176,6 +182,7 @@ public class SunshineSyncUtils {
         });
 
         /* Finally, once the thread is prepared, fire it off to perform our checks. */
+        Log.d("SyncUtils", "Cursor was empty or null, starting sync");
         checkForEmpty.start();
     }
 
