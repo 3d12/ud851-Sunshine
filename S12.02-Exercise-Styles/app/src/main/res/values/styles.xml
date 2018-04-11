@@ -26,12 +26,14 @@
     </style>
 
     <!-- DONE (1) Create a style that shows a Sunshine logo instead of a title -->
-    <style name="ActionBar.Solid.Sunshine.NoTitle" parent="Base.Widget.AppCompat.ActionBar.Solid">
-        <item name="android:title">@drawable/ic_logo</item>
+    <style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/ic_logo</item>
     </style>
 
     <!-- DONE (2) Create a style for MainActivity called AppTheme.Forecast that uses our custom ActionBar style -->
-    <style name="AppTheme.Forecast" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Forecast" parent="@style/AppTheme">
+        <item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>
     </style>
 
     <!-- DONE (3) Create the DetailLabel style -->
