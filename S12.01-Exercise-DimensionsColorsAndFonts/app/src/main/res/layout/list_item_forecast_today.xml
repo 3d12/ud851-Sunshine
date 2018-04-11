@@ -25,10 +25,10 @@
   - depending on whether or not it is being touched. These can be set programmatically in Java,  -
   - but again, we wanted to avoid making things too complicated.                                 -
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- TODO (10) Color the TextViews for weather data appropriately -->
-<!-- TODO (11) Color the background for today's weather data appropriately -->
-<!-- TODO (12) Replace dimension values with @dimen resources -->
-<!-- TODO (13) Use sans-serif-light font family for the temperature TextViews -->
+<!-- DONE (10) Color the TextViews for weather data appropriately -->
+<!-- DONE (11) Color the background for today's weather data appropriately -->
+<!-- DONE (12) Replace dimension values with @dimen resources -->
+<!-- DONE (13) Use sans-serif-light font family for the temperature TextViews -->
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -36,7 +36,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="16dp"
-    android:paddingTop="16dp">
+    android:paddingTop="16dp"
+    android:background="@color/colorPrimaryLight">
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - This Guideline divides the screen into a left half and a right half and is used to        -
@@ -70,13 +71,14 @@
         app:layout_constraintBottom_toTopOf="@+id/weather_icon"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@color/primaryText"
         tools:text="Today, April 03"/>
 
     <!-- Icon indicating weather condition -->
     <ImageView
         android:id="@+id/weather_icon"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="@dimen/today_icon"
+        android:layout_height="@dimen/today_icon"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -95,6 +97,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/weather_icon"
         app:layout_constraintRight_toRightOf="@+id/weather_icon"
         app:layout_constraintTop_toBottomOf="@+id/weather_icon"
+        android:textColor="@color/primaryText"
         tools:text="Rainy"/>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -116,6 +119,8 @@
         app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/weather_icon"
+        android:textColor="@color/primaryText"
+        android:fontFamily="sans-serif-light"
         tools:text="19\u00b0"/>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -135,6 +140,8 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/weather_description"
         app:layout_constraintLeft_toLeftOf="@+id/high_temperature"
         app:layout_constraintRight_toRightOf="@+id/high_temperature"
+        android:textColor="@color/secondaryText"
+        android:fontFamily="sans-serif-light"
         tools:text="10\u00b0"/>
 
 </android.support.constraint.ConstraintLayout>
